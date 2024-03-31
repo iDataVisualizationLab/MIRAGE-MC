@@ -2,8 +2,8 @@ import React, {useCallback, useEffect, useMemo, useState} from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
     setFilter,
-    setFilters,
-    selectFilters
+    selectFiltersList,
+    selectHasEmpty
 } from "../../reducer/streamfilters";
 import { ActionCreators } from "redux-undo";
 import {Button, createFilterOptions, Stack, TextField} from "@mui/material";
@@ -25,7 +25,8 @@ export default function FilterPanel() {
     const {isLoading,searchByStream,getList} = useDatabase();
     const [categoryOption,setCategoryOption] = useState({});
     const categoryOptionList = useSelector(selectFiltersList);
-    const [hasEmpty,setHasEmpty] = useState(true);
+    const hasEmpty = useSelector(selectHasEmpty);
+    const dispatch = useDispatch();
 
     const {logEvents} = useLog();
     useEffect(()=>{
@@ -68,9 +69,8 @@ export default function FilterPanel() {
             variant="contained"
             disabled={hasEmpty}
             onClick={()=>{
-                setHasEmpty(true);
-                categoryOptionList.push('');
-                setCategoryOptionList(categoryOptionList)
+                debugger
+                dispatch(setFilter({key:''}));
             }}
         >
             Add filter

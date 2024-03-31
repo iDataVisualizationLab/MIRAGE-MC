@@ -13,15 +13,16 @@ const streamFilters = createSlice({
             state.value[action.payload.key] = [];
         },
         setFilter: (state,action) =>{
+            debugger
+            let oindex = state.orderList.indexOf(action.payload.key);
             if (action.payload.key!==''){
-                let oindex = state.orderList.indexOf(action.payload.key);
                 // check if filter existed in list
                 if (oindex!=-1){
                     state.value[action.payload.key] = action.payload.value;
                 }else{
                     // check if need to replace 
                     let preindex = state.orderList.indexOf(action.payload.prekey);
-                    if (oindex!=-1){
+                    if (preindex!=-1){
                         state.orderList[preindex] = action.payload.key;
                         if(action.payload.prekey !=='')
                             state.value[action.payload.prekey] = []; // remove oldfilter
@@ -31,7 +32,6 @@ const streamFilters = createSlice({
                 }
                 state.value[action.payload.key] = action.payload.value;
             }else{
-                let oindex = state.orderList.indexOf(action.payload.key);
                 if (oindex==-1){
                     state.orderList.push(action.payload.key);
                 }
