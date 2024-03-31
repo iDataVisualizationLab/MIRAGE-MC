@@ -6,7 +6,7 @@ import ListboxComponent from "../ListboxComponent";
 import { useSelector, useDispatch } from "react-redux";
 import {
     setFilter,
-    setFilters,
+    deleteFilter,
     selectFilters
 } from "../../reducer/streamfilters";
 
@@ -14,8 +14,7 @@ const emptyArray = [];
 const emptyObj = {};
 const emptyFunc = ()=>{};
 export default function SelectionWithOption({options=emptyArray,
-    enabled=emptyObj, onChangeCat=emptyFunc, filterOptionsFunc,
-    order=0,
+    enabled=emptyObj,  filterOptionsFunc,
     cat='',
     filterOptions,searchByStream,
     getList, isLoading, logEvents}) {
@@ -29,20 +28,11 @@ export default function SelectionWithOption({options=emptyArray,
     },[cat])
 
     const handleChange = (event) => {
-        onChangeCat(cat,event.target.value,order);
-        // setF(options.find(d=>d.accessorKey===event.target.value));
-        // reset filter 
-        if (cat!=="")
-            dispatch(setFilter({key:cat,value:[]}));
+        dispatch(setFilter({key:event.target.value,value:[],prekey:cat}));
     };
 
     const onDelete = () =>{
-        debugger
-        // have something to filter
-        if (filters[f.accessorKey]&& filters[f.accessorKey].length){
-            dispatch(setFilter({key:cat,value:[]}));
-        }
-        onChangeCat(cat,'',order); // delete
+        dispatch(deleteFilter({key:cat}));
     }
     return <React.Fragment>
     <Stack direction={"row"}>
@@ -74,7 +64,7 @@ export default function SelectionWithOption({options=emptyArray,
             onChange={(event, value) => {
                 if (value!=='' && value && value.length)
                     logEvents('search',{'search_term':value,key:f.accessorKey,})
-                dispatch(setFilter({key:f.accessorKey,value,order}));
+                dispatch(setFilter({key:f.accessorKey,value}));
             }}
             onInputChange={f.dynamic?((event, newInputValue) => {
                 if (newInputValue&&newInputValue!=='')

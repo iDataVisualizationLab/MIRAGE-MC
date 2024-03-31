@@ -21,15 +21,20 @@ const filterOptionsFunc = (options, state) => {
 
 
 export default function FilterPanel() {
-    const filters = useSelector(selectFilters);
-    const dispatch = useDispatch();
     const [filterOptions,setFilterOptions] = useState({});
     const {isLoading,searchByStream,getList} = useDatabase();
     const [categoryOption,setCategoryOption] = useState({});
-    const [categoryOptionList,setCategoryOptionList] = useState(['']);
+    const categoryOptionList = useSelector(selectFiltersList);
     const [hasEmpty,setHasEmpty] = useState(true);
 
     const {logEvents} = useLog();
+    useEffect(()=>{
+        const obj = {};
+        categoryOptionList.forEach(element => {
+            obj[element] = true;
+        });
+        setCategoryOption(obj);
+    },[categoryOptionList])
     // useEffect(()=>{
     //     if (!Object.keys(filters).length) {
     //         // const newfilters = {};
@@ -45,21 +50,6 @@ export default function FilterPanel() {
     useEffect(()=>{
         setFilterOptions({...fields});
     },[fields])
-    const onChangeCat = useCallback((pre,v,order)=>{
-        if (v!==''){
-            if (pre!=='')
-                delete categoryOption[pre];
-            categoryOption[v] = true;
-            categoryOptionList[order] = v;
-            setCategoryOption(categoryOption);
-            setHasEmpty(categoryOptionList.find(d=>d==='')?true:false);
-            setCategoryOptionList(categoryOptionList);
-        }else{
-            delete categoryOption[pre];
-            setCategoryOptionList(categoryOptionList.filter((d,i)=>i!==order));
-            setCategoryOption(categoryOption);
-        }
-    },[filterSearch,categoryOptionList,categoryOption]);
     return <Stack spacing={2} padding={2}>
         {categoryOptionList.map((d,i)=><SelectionWithOption 
             key={i}
@@ -67,7 +57,6 @@ export default function FilterPanel() {
             cat={d}
             options={filterSearch} 
             enabled={categoryOption}
-            onChangeCat={onChangeCat}
             getList={getList}
             filterOptionsFunc={filterOptionsFunc}
             filterOptions={filterOptions}

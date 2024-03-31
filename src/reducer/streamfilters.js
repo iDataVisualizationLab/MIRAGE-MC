@@ -1,19 +1,52 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const initialState= {value:{}};
+const initialState= {value:{},orderList:[''],hasEmpty:true};
+// orderList can has ''
+// value is map of filter
+// hasEmpty is true if '' is in orderList
 const streamFilters = createSlice({
     name: "streamFilters",
     initialState,
     reducers: {
+        deleteFilter: (state,action) =>{
+            state.orderList = state.orderList.filter(d=>d!==action.payload.key);
+            state.value[action.payload.key] = [];
+        },
         setFilter: (state,action) =>{
-            state.value[action.payload.key] = action.payload.value;
-
+            if (action.payload.key!==''){
+                let oindex = state.orderList.indexOf(action.payload.key);
+                // check if filter existed in list
+                if (oindex!=-1){
+                    state.value[action.payload.key] = action.payload.value;
+                }else{
+                    // check if need to replace 
+                    let preindex = state.orderList.indexOf(action.payload.prekey);
+                    if (oindex!=-1){
+                        state.orderList[preindex] = action.payload.key;
+                        if(action.payload.prekey !=='')
+                            state.value[action.payload.prekey] = []; // remove oldfilter
+                    }else{
+                        state.orderList.push(action.payload.key);
+                    }
+                }
+                state.value[action.payload.key] = action.payload.value;
+            }else{
+                let oindex = state.orderList.indexOf(action.payload.key);
+                if (oindex==-1){
+                    state.orderList.push(action.payload.key);
+                }
+            }
+            state.hasEmpty = state.orderList.indexOf('')!==-1;
         },
         setFilters: (state,action) => {
             state.value = {...action.payload.value};
+            state.orderList = Object.keys(action.payload.value);
+            state.hasEmpty = state.orderList.indexOf('')!==-1;
         }
     }
 });
-export const { setFilter, setFilters } = streamFilters.actions;
+export const { deleteFilter, setFilter, setFilters } = streamFilters.actions;
 export const selectFilters = (state) => state.streamFilters.present.value;
+export const selectFiltersList = (state) => state.streamFilters.present.orderList;
+export const selectHasEmpty = (state) => state.streamFilters.present.hasEmpty;
 export default streamFilters.reducer
