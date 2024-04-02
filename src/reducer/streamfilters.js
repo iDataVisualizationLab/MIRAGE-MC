@@ -13,7 +13,6 @@ const streamFilters = createSlice({
             state.value[action.payload.key] = [];
         },
         setFilter: (state,action) =>{
-            debugger
             let oindex = state.orderList.indexOf(action.payload.key);
             if (action.payload.key!==''){
                 // check if filter existed in list

@@ -44,6 +44,7 @@ export const fields = [
     {
         accessorKey: 'artist_name',
         header: 'Artist',
+        cat:'artist',
         dynamic:true,
     },
     {
@@ -61,4 +62,36 @@ export const fields = [
     // }
 ];
 export const fieldsWithoutSelected = fields.filter((d,i)=>i);
-export const filterSearch = fields.filter(f=>!f.filterDisable);
+export const filterSearch = [
+    ...fields.filter(f=>!f.filterDisable),
+    {
+        accessorKey: 'artist_country',
+        header: 'Artist Country ',
+        cat:'artist',
+        dynamic:true,
+    },
+    {
+        accessorKey: 'artist_genres',
+        header: 'Artist Genre ',
+        cat:'artist',
+        dynamic:true,
+    },
+    {
+        accessorKey: 'artist_genders',
+        header: 'Artist Gender',
+        cat:'artist',
+        dynamic:true,
+    },
+    {
+        accessorKey: 'artist_sexualorientations',
+        header: 'Artist Sexualorientations ',
+        cat:'artist',
+        dynamic:true,
+    },
+    {
+        accessorKey: 'artist_ethnicities',
+        header: 'Artist Ethnicities ',
+        cat:'artist',
+        dynamic:true,
+    },
+];

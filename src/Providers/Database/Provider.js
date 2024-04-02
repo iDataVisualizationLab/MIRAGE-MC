@@ -195,9 +195,9 @@ const Provider = ({  children }) => {
         },
         [state]
     );
-    const searchByStream = (path,query)=>{
+    const searchByStream = (path,query,cat='stream')=>{
         dispatch({type: 'LOADING_CHANGED', path: `search-${path}`, isLoading: true});
-        return axios.post(`${APIUrl}/stream/search`,{[path]:query}).then(({data})=> {
+        return axios.post(`${APIUrl}/${cat}/search`,{[path]:query}).then(({data})=> {
             dispatch({type: 'VALUE_CHANGE', path: `search-${path}`, value: data.map(d=>d._id), isLoading: false});
         }).catch ((error)=> {
             dispatch({
@@ -289,7 +289,7 @@ const Provider = ({  children }) => {
         }
     }
     const getDownloadData = useCallback((listids)=>{
-        return axios.post(`${APIUrl}/meta/`,{id:listids.map(d=>d._id)}).then(({data})=> {
+        return axios.post(`${APIUrl}/meta/`,{id:listids.map(d=>d._id),download:true}).then(({data})=> {
             return data;
         })
     },[state]);

@@ -49,6 +49,7 @@ export default function SelectionWithOption({options=emptyArray,
         </Select>
       </FormControl>
       <CusAutocomplete
+            disabled={cat===''}
             fullWidth
             key={f.accessorKey}
             multiple
@@ -68,7 +69,7 @@ export default function SelectionWithOption({options=emptyArray,
             }}
             onInputChange={f.dynamic?((event, newInputValue) => {
                 if (newInputValue&&newInputValue!=='')
-                    searchByStream(f.accessorKey,newInputValue);
+                    searchByStream(f.accessorKey,newInputValue,f.cat);
             }):undefined}
             renderInput={(params) => (
                 <TextField
@@ -77,9 +78,9 @@ export default function SelectionWithOption({options=emptyArray,
                 />
             )}
         />
-        <IconButton aria-label="close" size="small" onClick={onDelete}>
+        {(cat!=='')&&<IconButton aria-label="close" size="small" onClick={onDelete}>
             <CancelIcon fontSize="inherit" />
-        </IconButton>
+        </IconButton>}
     </Stack>
     </React.Fragment>
 }
