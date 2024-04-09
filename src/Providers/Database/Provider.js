@@ -293,6 +293,18 @@ const Provider = ({  children }) => {
             return data;
         })
     },[state]);
+    
+    const getShortenLink = useCallback((data)=>{
+        return axios.post(`${APIUrl}/url/`,{data}).then(({data})=> {
+            return window.location.href+"selected="+data._id;
+        })
+    },[state]);
+
+    const getDataFromShortenLink = useCallback((id)=>{
+        return axios.get(`${APIUrl}/url/${id}`).then(({data})=> {
+            return data;
+        })
+    },[state]);
 
     const setFuncCollection = useCallback((path,func=emptyFunc)=>{
         dispatch({type: 'VALUE_CHANGE', path, value: func, isLoading: false});
@@ -324,6 +336,8 @@ const Provider = ({  children }) => {
             requestDetail,
             getListError,
             getDownloadData,
+            getShortenLink,
+            getDataFromShortenLink,
             isLoading
         }}>
             {children}

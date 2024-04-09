@@ -1,7 +1,6 @@
-import {Button, TextField} from "@mui/material";
+import {Button, TextField, Stack} from "@mui/material";
 import React, {Fragment, useState} from "react";
 import QuestionDialog from '../../components/Dialog';
-import {SET_MENU} from "../../reducer/actions/setting";
 
 export default function ShareButton({getUrl}){
     const [dialogOpen,setDialogOpen] = useState(false);
@@ -12,8 +11,15 @@ export default function ShareButton({getUrl}){
         setDialogOpen(false);
     }
     const openDialog = () => {
-        setUrl(getUrl());
-        setDialogOpen(true);
+        setIsProcessing(true);
+        getUrl().then(d=>{
+            setUrl(d);
+            setDialogOpen(true);
+            setIsProcessing(false);
+        }).catch((e)=>{
+            setUrl('');
+            setIsProcessing(false);
+        })
     }
     return <Fragment>
     <Button variant="contained" onClick={openDialog}>Share</Button>
@@ -23,16 +29,21 @@ export default function ShareButton({getUrl}){
         isProcessing={isProcessing}
         title={'Share URL'}
         maxWidth={"md"}
-        message={<>
+        message={<Stack direction="collumn">
             <TextField 
-                label="shareURL" 
+                size="small"
+                label="" 
                 variant="outlined" 
                 InputProps={{
                     readOnly: true,
                 }}
                 value={url}
             />
-        </>}
+            <Button variant="contained" size="small"
+                onClick={() => {navigator.clipboard.writeText(url)}}>
+                    Copy
+            </Button>
+        </Stack>}
     />
     </Fragment>
 }

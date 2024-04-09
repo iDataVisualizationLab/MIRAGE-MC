@@ -27,7 +27,7 @@ const EventTable = ({
     // const [data, setData] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [sorting, setSorting] = useState([]);
-    const {getDownloadData} = useDatabase();
+    const {getDownloadData,getShortenLink,getDatafromShortenLink} = useDatabase();
 
     useEffect(() => {
         //scroll to the top of the table when the sorting changes
@@ -101,17 +101,7 @@ const EventTable = ({
     };
     const handleUrl = useCallback(async() => {
         const compressed = lzString.compressToEncodedURIComponent(JSON.stringify(data.map(d=>d._id)));
-        debugger
-        const url = window.location.href+"selected="+compressed
-        try {
-            const res = await axios(
-              `https://api.shrtco.de/v2/shorten?url=${url}`
-            )
-            return (res.data.result.full_short_link);
-        } catch (e) {
-            alert("Can't get short url");
-            return url;
-        }
+        return getShortenLink(compressed);
     },[data,mainurl])
     // console.log(data)
     return (
