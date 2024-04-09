@@ -41,6 +41,7 @@ import {actionCreators} from "../../reducer/actions/selectedList";
 import {fields, fieldsWithoutSelected} from "../../components/EventTable/fields";
 import SongListDetail from "../../components/SongListDetail";
 import {useLog} from "../../Providers/Firebase";
+import {useLocation} from "react-router-dom";
 
 function getWindowDimensions() {
     const { innerWidth: width, innerHeight: height } = window;
@@ -77,6 +78,7 @@ const LandingPage = () => {
     const eventSelectedData = useSelector(state => Array.from(state.seletedList.items.values( ) ));
     const {setlocation, logEvents} = useLog();
     const query = useQuery();
+    const location = useLocation();
     useEffect(()=>{
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition((position)=>{
@@ -259,6 +261,7 @@ const LandingPage = () => {
                                    onSendToList={(l)=>dispatch(actionCreators.addsToBasket(l))}
                                    onRemoveFromList={(l)=>dispatch(actionCreators.removeItems(l))}
                                    // onTogleWin={()=>onTogleWin("eventList")}
+                                   mainurl={location}
                 />;
             case 'eventListDetail':
                 return <SongListDetail countries={isFullView?getList('countries_full'):getList('countries')}/>;
@@ -275,6 +278,7 @@ const LandingPage = () => {
                                    onSendToList={(l)=>dispatch(actionCreators.addsToBasket(l))}
                                    onRemoveFromList={(l)=>dispatch(actionCreators.removeItems(l))}
                                    // onTogleWin={()=>onTogleWin("eventList")}
+                                   mainurl={location}
                 />
             case 'eventMap':
                 return <EventMap

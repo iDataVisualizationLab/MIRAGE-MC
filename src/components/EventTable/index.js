@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {MaterialReactTable, MRT_ToolbarAlertBanner} from 'material-react-table';
 import Scrollbar from "material-ui-shell/lib/components/Scrollbar";
 // import {fields} from "./fields";
@@ -10,11 +10,14 @@ import SaveIcon from '@mui/icons-material/Save';
 import {ExportToCsv} from 'export-to-csv';
 import {useDatabase} from "../../Providers/Database";
 import DownloadOption from "./DownloadOption";
-
+import ShareButton from "./ShareButton";
+import axios from "axios";
+import lzString from "lz-string";
 
 const EventTable = ({
                         id = 'tableevent', columns, data, totalData, selectedData, disableAdding,
-                        isLoadingData, onSelectRow, highlightId, onSendToList, onRemoveFromList
+                        isLoadingData, onSelectRow, highlightId, onSendToList, onRemoveFromList,
+                        mainurl
                     }) => {
     const [rowSelection, setRowSelection] = useState({});
 
@@ -96,6 +99,20 @@ const EventTable = ({
         csvExporter.generateCsv(datadownload);
         setIsLoading(false)
     };
+    const handleUrl = useCallback(async() => {
+        const compressed = lzString.compressToEncodedURIComponent(JSON.stringify(data.map(d=>d._id)));
+        debugger
+        const url = window.location.href+"selected="+compressed
+        try {
+            const res = await axios(
+              `https://api.shrtco.de/v2/shorten?url=${url}`
+            )
+            return (res.data.result.full_short_link);
+        } catch (e) {
+            alert("Can't get short url");
+            return url;
+        }
+    },[data,mainurl])
     // console.log(data)
     return (
         <MaterialReactTable
@@ -146,6 +163,7 @@ const EventTable = ({
                             onDownloadSearchList={() => handleExportRows(totalData)}
                             onDownloadSelectedList={() => handleExportRows(selectedData)}
                         />
+                        <ShareButton getUrl={handleUrl}/>
                     </Box>
                 )
             }}

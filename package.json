@@ -27,9 +27,11 @@
     "intl": "^1.2.5",
     "lodash": "^4.17.21",
     "lp-react-virtualized-auto-sizer-react-18": "^1.0.7",
+    "lz-string": "^1.5.0",
     "material-react-table": "^2.0.1",
     "moment": "^2.29.4",
     "notistack": "^2.0.8",
+    "pako": "^2.1.0",
     "plotly.js": "^2.18.2",
     "react": "^18.2.0",
     "react-custom-scrollbars-2": "^4.5.0",
@@ -48,6 +50,7 @@
     "react-window": "^1.8.8",
     "redux": "^4.2.1",
     "redux-undo": "^1.0.1",
+    "shrink-string": "^3.1.9",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
