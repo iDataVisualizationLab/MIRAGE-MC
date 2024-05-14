@@ -27,7 +27,7 @@ const EventTable = ({
     // const [data, setData] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [sorting, setSorting] = useState([]);
-    const {getDownloadData,getShortenLink,getDatafromShortenLink} = useDatabase();
+    const {getDownloadData,getShortenLink} = useDatabase();
 
     useEffect(() => {
         //scroll to the top of the table when the sorting changes
@@ -45,7 +45,7 @@ const EventTable = ({
         setIsLoading(true)
         getDownloadData(rows).then((datadownload) => {
             const csvOptions = {
-                fieldSeparator: ',',
+                fieldSeparator: '|',
                 quoteStrings: '"',
                 decimalSeparator: '.',
                 showLabels: true,

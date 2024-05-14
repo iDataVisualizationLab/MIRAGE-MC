@@ -58,7 +58,7 @@ const LandingPage = () => {
     // const {openDialog,closeDialog, setProcessing} = useQuestions()
     const filters = useSelector(selectFilters);
     // const { appConfig } = useConfig()
-    const {getList,isLoading,getEvents,requestEvents,requestDetail,getDetail,setFuncCollection} = useDatabase();
+    const {getList,isLoading,getEvents,requestEvents,requestDetail,getDetail,setFuncCollection,getDataFromShortenLink} = useDatabase();
     const [zoomLoc,setZoomLoc] = useState();
     const [isFullView,setIsFullView] = useState(true);
     const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions());
@@ -99,9 +99,18 @@ const LandingPage = () => {
     const isLoadingInit = isLoading('rawData');
     const isLoadingEvent = isLoading('events');
     const isLoadingLocs = isLoading('locs');
+    const [firstLoad,setFirstLoad] = useState(true);
     useEffect(()=>{
         if (!isLoadingInit) {
-            requestEvents(filters, 1000)
+            if (firstLoad){
+                setFirstLoad(false);
+                debugger
+                if (!(query && query.get("selected")))
+                    requestEvents(filters, 1000);
+            } else{
+                debugger
+            requestEvents(filters, 1000);
+        }
         }
     },[isLoadingInit,filters])
     const onSelectStream = useCallback((data)=>{

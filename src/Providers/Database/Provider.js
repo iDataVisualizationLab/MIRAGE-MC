@@ -5,9 +5,11 @@ import {isArray, uniq} from 'lodash';
 import full_countries from './data/mirage-mc-v1.countries.json';
 import full_location from './data/mirage-mc-v1.locs.json';
 import axios from 'axios';
+import lzString from "lz-string";
 
 const APIKey = process.env.REACT_APP_DATA_API;
 const APIUrl = ((process.env.NODE_ENV === 'production') ? process.env.REACT_APP_DATA_URL : process.env.REACT_APP_DATA_URL_LOCAL);
+const HOMEURL = ((process.env.NODE_ENV === 'production') ? process.env.REACT_APP_DATA_HOMEPAGE : process.env.REACT_APP_DATA_HOMEPAGE_LOCAL);
 
 axios.defaults.headers.common = {
     "api-key": APIKey,
@@ -216,9 +218,12 @@ const Provider = ({  children }) => {
         [state.events.value]
     );
     const requestEvents = useCallback(
-        (filter,limit) => {
+        (filter,limit,isid) => {
             dispatch({type: 'LOADING_CHANGED', path: 'events', isLoading: true});
-            axios.post(`${APIUrl}/meta/`, {filter}).then(({data})=> {
+            let query = {filter};
+            if (isid)
+                query={id:filter};
+            axios.post(`${APIUrl}/meta/`, query).then(({data})=> {
                 dispatch({type: 'VALUE_CHANGE', path: 'events', value:data??[], isLoading: false});
             }).catch(error=>{
                 dispatch({
@@ -296,13 +301,22 @@ const Provider = ({  children }) => {
     
     const getShortenLink = useCallback((data)=>{
         return axios.post(`${APIUrl}/url/`,{data}).then(({data})=> {
-            return window.location.href+"selected="+data._id;
+            return HOMEURL+"?selected="+data._id;
         })
     },[state]);
 
     const getDataFromShortenLink = useCallback((id)=>{
         return axios.get(`${APIUrl}/url/${id}`).then(({data})=> {
-            return data;
+            if (data&&data.data){
+                try{
+                let ids = lzString.decompressFromEncodedURIComponent(data.data);
+                ids = JSON.parse(ids);
+                requestEvents(ids,1000,true)
+                }catch(e){
+                    return null;
+                }
+            }else
+                return null;
         })
     },[state]);
 
