@@ -6,6 +6,12 @@ import full_countries from './data/mirage-mc-v1.countries.json';
 import full_location from './data/mirage-mc-v1.locs.json';
 import axios from 'axios';
 import lzString from "lz-string";
+import {useDispatch,useSelector} from "react-redux";
+import {
+    setFilters,
+    selectFilters
+} from "../../reducer/streamfilters";
+import {actionCreators} from "../../reducer/actions/selectedList";
 
 const APIKey = process.env.REACT_APP_DATA_API;
 const APIUrl = ((process.env.NODE_ENV === 'production') ? process.env.REACT_APP_DATA_URL : process.env.REACT_APP_DATA_URL_LOCAL);
@@ -53,6 +59,9 @@ const init = {fields: {value:{stationData:[],
 const emptyFunc = ()=>{}
 const Provider = ({  children }) => {
     const [state, dispatch] = useReducer(reducer, init);
+    const filters = useSelector(selectFilters);
+    const eventSelectedData = useSelector(state => Array.from(state.seletedList.items.values( ) ));
+    const dispatchEvent = useDispatch();
     useEffect(() => {
         const controllerS = new AbortController();
         const controllerL = new AbortController();
@@ -299,19 +308,28 @@ const Provider = ({  children }) => {
         })
     },[state]);
     
-    const getShortenLink = useCallback((data)=>{
-        return axios.post(`${APIUrl}/url/`,{data}).then(({data})=> {
+    const getShortenLink = useCallback(()=>{
+        // get filter, ID and seleted song
+        const _data = {filters,ids:eventSelectedData.map(d=>d._id),id:getDetail()};
+        const compressed = lzString.compressToEncodedURIComponent(JSON.stringify(_data));
+        return axios.post(`${APIUrl}/url/`,{data:compressed}).then(({data})=> {
             return HOMEURL+"?selected="+data._id;
         })
-    },[state]);
+    },[state,filters,eventSelectedData]);
 
     const getDataFromShortenLink = useCallback((id)=>{
         return axios.get(`${APIUrl}/url/${id}`).then(({data})=> {
             if (data&&data.data){
                 try{
-                let ids = lzString.decompressFromEncodedURIComponent(data.data);
-                ids = JSON.parse(ids);
-                requestEvents(ids,1000,true)
+                    let _data = lzString.decompressFromEncodedURIComponent(data.data);
+                    _data = JSON.parse(_data);
+                    dispatchEvent(setFilters({value:_data.filters}));
+                    if (_data.id)
+                        requestDetail(_data.id);
+                    requestEvents(_data.filters, 1000);
+                    axios.post(`${APIUrl}/meta/`, {id:_data.ids}).then(({data})=> {
+                        dispatchEvent(actionCreators.addsToBasket(data));
+                    });
                 }catch(e){
                     return null;
                 }

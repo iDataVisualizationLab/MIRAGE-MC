@@ -11,8 +11,6 @@ import {ExportToCsv} from 'export-to-csv';
 import {useDatabase} from "../../Providers/Database";
 import DownloadOption from "./DownloadOption";
 import ShareButton from "./ShareButton";
-import axios from "axios";
-import lzString from "lz-string";
 
 const EventTable = ({
                         id = 'tableevent', columns, data, totalData, selectedData, disableAdding,
@@ -100,8 +98,7 @@ const EventTable = ({
         setIsLoading(false)
     };
     const handleUrl = useCallback(async() => {
-        const compressed = lzString.compressToEncodedURIComponent(JSON.stringify(data.map(d=>d._id)));
-        return getShortenLink(compressed);
+        return getShortenLink();
     },[data,mainurl])
     // console.log(data)
     return (

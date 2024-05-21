@@ -63,7 +63,6 @@ const Earth3D = forwardRef(({locs,countries,width,height,onSelect,onSelectLegend
     },[]);
 
     function handleData({locs,countries}) {
-        console.log(locs,countries)
         const contriesMap = {};
         const range = d3.extent(locs, d => d?.count);
         
