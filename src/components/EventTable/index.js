@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {MaterialReactTable, MRT_ToolbarAlertBanner} from 'material-react-table';
 import Scrollbar from "material-ui-shell/lib/components/Scrollbar";
 // import {fields} from "./fields";
@@ -10,11 +10,12 @@ import SaveIcon from '@mui/icons-material/Save';
 import {ExportToCsv} from 'export-to-csv';
 import {useDatabase} from "../../Providers/Database";
 import DownloadOption from "./DownloadOption";
-
+import ShareButton from "./ShareButton";
 
 const EventTable = ({
                         id = 'tableevent', columns, data, totalData, selectedData, disableAdding,
-                        isLoadingData, onSelectRow, highlightId, onSendToList, onRemoveFromList
+                        isLoadingData, onSelectRow, highlightId, onSendToList, onRemoveFromList,
+                        mainurl
                     }) => {
     const [rowSelection, setRowSelection] = useState({});
 
@@ -24,7 +25,8 @@ const EventTable = ({
     // const [data, setData] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [sorting, setSorting] = useState([]);
-    const {getDownloadData} = useDatabase();
+    const {getDownloadData,getShortenLink, getList} = useDatabase();
+    const event_export_list = getList('event_export_list');
 
     useEffect(() => {
         //scroll to the top of the table when the sorting changes
@@ -42,14 +44,14 @@ const EventTable = ({
         setIsLoading(true)
         getDownloadData(rows).then((datadownload) => {
             const csvOptions = {
-                fieldSeparator: ',',
+                fieldSeparator: '|',
                 quoteStrings: '"',
                 decimalSeparator: '.',
                 showLabels: true,
                 filename: `mirage-mc-${new Date().toDateString()}`,
                 useBom: true,
                 useKeysAsHeaders: true,
-                // headers: fields.map((c) => c.accessorKey),
+                headers: Object.keys(event_export_list),
             };
             const csvExporter = new ExportToCsv(csvOptions);
             csvExporter.generateCsv(datadownload);
@@ -96,6 +98,9 @@ const EventTable = ({
         csvExporter.generateCsv(datadownload);
         setIsLoading(false)
     };
+    const handleUrl = useCallback(async() => {
+        return getShortenLink();
+    },[data,mainurl])
     // console.log(data)
     return (
         <MaterialReactTable
@@ -146,6 +151,7 @@ const EventTable = ({
                             onDownloadSearchList={() => handleExportRows(totalData)}
                             onDownloadSelectedList={() => handleExportRows(selectedData)}
                         />
+                        <ShareButton getUrl={handleUrl}/>
                     </Box>
                 )
             }}

@@ -6,7 +6,7 @@ import EventTable from "./index";
 export default function ({data,isLoadingData,onTogleWin,onSelectRow,highlightId}) {
     return <Card sx={{ backgroundColor:(theme)=> semicolor(theme.palette.background.paper),height:'100%',position:'relative'}}>
         <CardContent sx={{height: '100%', position: 'relative'}}>
-            <Typography>Song List</Typography>
+            <Typography>Event List</Typography>
             <IconButton
                 aria-label="close"
                 onClick={onTogleWin}

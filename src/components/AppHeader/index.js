@@ -36,8 +36,10 @@ export default function ({layoutItems,layoutItemsOnChange=()=>{}}){
     const handleCloseUserMenu = () => {
         setAnchorElUser(null);
     };
+
     return <>
         <img src={require('../../assets/logo.png')} loading="lazy" style={{height:'auto',width:150}}></img>
+        <span style={{marginRight:5}}>v{process.env.REACT_APP_DATA_APP_VERSION}</span>
         <IconButton title={"About us"} size={"small"} sx={{transform:"translate(-10px,10px)"}}
         onClick={()=>dispatch({ type: SET_MENU, opened: true })}>
             <HelpIcon fontSize="inherit"/>

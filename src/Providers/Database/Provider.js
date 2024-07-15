@@ -5,9 +5,18 @@ import {isArray, uniq} from 'lodash';
 import full_countries from './data/mirage-mc-v1.countries.json';
 import full_location from './data/mirage-mc-v1.locs.json';
 import axios from 'axios';
+import lzString from "lz-string";
+import {useDispatch,useSelector} from "react-redux";
+import {
+    setFilters,
+    selectFilters
+} from "../../reducer/streamfilters";
+import {actionCreators} from "../../reducer/actions/selectedList";
+import exportVariable from './data/MIRAGE_exportvariables.csv';
 
 const APIKey = process.env.REACT_APP_DATA_API;
 const APIUrl = ((process.env.NODE_ENV === 'production') ? process.env.REACT_APP_DATA_URL : process.env.REACT_APP_DATA_URL_LOCAL);
+const HOMEURL = ((process.env.NODE_ENV === 'production') ? process.env.REACT_APP_DATA_HOMEPAGE : process.env.REACT_APP_DATA_HOMEPAGE_LOCAL);
 
 axios.defaults.headers.common = {
     "api-key": APIKey,
@@ -43,6 +52,7 @@ const init = {fields: {value:{stationData:[],
     locs_full: {value:full_location},
     countries_full: {value:full_countries},
     events: {},
+    event_export_list: {value:{}},
     loading:false,
     error:false,
     isInit:false
@@ -51,6 +61,9 @@ const init = {fields: {value:{stationData:[],
 const emptyFunc = ()=>{}
 const Provider = ({  children }) => {
     const [state, dispatch] = useReducer(reducer, init);
+    const filters = useSelector(selectFilters);
+    const eventSelectedData = useSelector(state => Array.from(state.seletedList.items.values( ) ));
+    const dispatchEvent = useDispatch();
     useEffect(() => {
         const controllerS = new AbortController();
         const controllerL = new AbortController();
@@ -62,6 +75,7 @@ const Provider = ({  children }) => {
             dispatch({type: 'LOADING_CHANGED', path: 'locs', isLoading: true});
             dispatch({type: 'LOADING_CHANGED', path: 'countries', isLoading: true});
             dispatch({type: 'LOADING_CHANGED', path: 'fields', isLoading: true});
+            dispatch({type: 'LOADING_CHANGED', path: 'event_export_list', isLoading: true}); // for export
             // load data
             Promise.all([
                 axios.get(`${APIUrl}/station/city`,{
@@ -145,6 +159,15 @@ const Provider = ({  children }) => {
                 // console.timeEnd('-filterdata-');
                 console.timeEnd('Load and process data');
             });
+            // load export list
+            d3csv(exportVariable,(data)=>{
+                const event_export_list={};
+                data.forEach(d=>{
+                    if (d["cut from export?"]==="N")
+                        event_export_list[d["metadata variables"]]=true;
+                });
+                dispatch({type: 'VALUE_CHANGE', path: 'event_export_list', value: event_export_list, isLoading: false});
+            });
         } catch (error) {
             dispatch({
                 type: "ERROR",
@@ -195,9 +218,9 @@ const Provider = ({  children }) => {
         },
         [state]
     );
-    const searchByStream = (path,query)=>{
+    const searchByStream = (path,query,cat='stream')=>{
         dispatch({type: 'LOADING_CHANGED', path: `search-${path}`, isLoading: true});
-        return axios.post(`${APIUrl}/stream/search`,{[path]:query}).then(({data})=> {
+        return axios.post(`${APIUrl}/${cat}/search`,{[path]:query}).then(({data})=> {
             dispatch({type: 'VALUE_CHANGE', path: `search-${path}`, value: data.map(d=>d._id), isLoading: false});
         }).catch ((error)=> {
             dispatch({
@@ -216,9 +239,12 @@ const Provider = ({  children }) => {
         [state.events.value]
     );
     const requestEvents = useCallback(
-        (filter,limit) => {
+        (filter,limit,isid) => {
             dispatch({type: 'LOADING_CHANGED', path: 'events', isLoading: true});
-            axios.post(`${APIUrl}/meta/`, {filter}).then(({data})=> {
+            let query = {filter};
+            if (isid)
+                query={id:filter};
+            axios.post(`${APIUrl}/meta/`, query).then(({data})=> {
                 dispatch({type: 'VALUE_CHANGE', path: 'events', value:data??[], isLoading: false});
             }).catch(error=>{
                 dispatch({
@@ -289,8 +315,38 @@ const Provider = ({  children }) => {
         }
     }
     const getDownloadData = useCallback((listids)=>{
-        return axios.post(`${APIUrl}/meta/`,{id:listids.map(d=>d._id)}).then(({data})=> {
+        return axios.post(`${APIUrl}/meta/`,{id:listids.map(d=>d._id),download:true}).then(({data})=> {
             return data;
+        })
+    },[state]);
+    
+    const getShortenLink = useCallback(()=>{
+        // get filter, ID and seleted event
+        const _data = {filters,ids:eventSelectedData.map(d=>d._id),id:getDetail()};
+        const compressed = lzString.compressToEncodedURIComponent(JSON.stringify(_data));
+        return axios.post(`${APIUrl}/url/`,{data:compressed}).then(({data})=> {
+            return HOMEURL+"?selected="+data._id;
+        })
+    },[state,filters,eventSelectedData]);
+
+    const getDataFromShortenLink = useCallback((id)=>{
+        return axios.get(`${APIUrl}/url/${id}`).then(({data})=> {
+            if (data&&data.data){
+                try{
+                    let _data = lzString.decompressFromEncodedURIComponent(data.data);
+                    _data = JSON.parse(_data);
+                    dispatchEvent(setFilters({value:_data.filters}));
+                    if (_data.id)
+                        requestDetail(_data.id);
+                    requestEvents(_data.filters, 1000);
+                    axios.post(`${APIUrl}/meta/`, {id:_data.ids}).then(({data})=> {
+                        dispatchEvent(actionCreators.addsToBasket(data));
+                    });
+                }catch(e){
+                    return null;
+                }
+            }else
+                return null;
         })
     },[state]);
 
@@ -324,6 +380,8 @@ const Provider = ({  children }) => {
             requestDetail,
             getListError,
             getDownloadData,
+            getShortenLink,
+            getDataFromShortenLink,
             isLoading
         }}>
             {children}

@@ -45,7 +45,6 @@ const MenuHeader = () => {
             ...theme.mixins.toolbar,
         },
     }
-
     return (
         <Paper
             square={true}

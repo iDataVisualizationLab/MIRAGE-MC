@@ -23,25 +23,25 @@ const AboutDialog = ({ children }) => {
                 isOpen={dialogOpen}
                 handleClose={closeDialog}
                 isProcessing={isProcessing}
-                title={'About us'}
+                title={''}
                 maxWidth={"md"}
                 message={<>
                     <Typography variant={"h5"} sx={{marginBottom:2}}>
-                        Welcome to the Music Informatics for Radio Across the GlobE (MIRAGE) project! This online dashboard allows you to access, interact with, and export meta data and musicological features from the music found on internet radio.
+                        Welcome to the Music Informatics for Radio Across the GlobE (MIRAGE) project! The first development release (v{process.env.REACT_APP_DATA_APP_VERSION}) of this online dashboard allows you to access, interact with, and export meta data and musicological features from the music found on internet radio.
+
+
                     </Typography>
                     <Typography variant={"h5"} sx={{marginBottom:2}}>
-                        The MIRAGE dashboard consists of meta data (e.g., artist name, song title, etc.) for one million songs or events that were streaming on the Radio Garden streaming service during the months October-January 2022-2023. Each of 86 meta data variables pertaining to the location, station, stream, artist, and track was obtained from the Radio Garden API, the Internet Radio Station Stream Encoder, Annotator review, or the Spotify or Wikidata APIs.
+                        The MIRAGE dashboard (v{process.env.REACT_APP_DATA_APP_VERSION}) consists of meta data (e.g., artist name, event title, etc.) for one million songs or events that were streaming on the Radio Garden streaming service during the months October-January 2022-2023. Each of 86 meta data variables pertaining to the location, station, stream, artist, and track was obtained from either the Radio Garden API, the internet radio station stream encoder, review by human annotators, or the Spotify and Wikidata APIs.
                     </Typography>
                     <Typography variant={"h5"} sx={{marginBottom:1}}>
-                        If you plan to use any of the data or visualizations available on the MIRAGE dashboard, please cite the following publication:
+                    If you are a copyright owner for any of the metadata that appears in MIRAGE and would like us to remove your metadata, please contact the developer team at the following email address: {"<removed for anonymous review>"}
+                    </Typography>
+                    <Typography variant={"h5"} sx={{marginBottom:1}}>
+                        If you plan to use any of the data or visualizations available on the MIRAGE dashboard, please cite the following publication:  
                     </Typography>
                     <Typography variant={"h5"} sx={{marginBottom:2,marginLeft:2}}>
-                        Sears, David R. W., Goh, Ting Ting, Nguyen, Ngan V. T., and Tommy Dang. (2023). Developing corpora for musical traditions across the globe: Music analysis with the MIRAGE-MetaCorpus. Paper presented at the 46th annual meeting of the Society for Music Theory (SMT), Denver, CO, November 11.
-                    </Typography>
-                    <Typography variant={"h5"} sx={{marginBottom:2}}>
-                        The source code for the MIRAGE dashboard is also available on Github: <Link color={'secondary'} href={'https://github.com/iDataVisualizationLab/mirage-mc'}
-                        target={"_blank"}
-                    >https://github.com/iDataVisualizationLab/mirage-mc</Link>
+                        {"<if accepted, the citation will be provided here>"}
                     </Typography>
                     <Stack direction={"row"} width={'100%'} spacing={2} justifyContent={'center'}>
                         <img

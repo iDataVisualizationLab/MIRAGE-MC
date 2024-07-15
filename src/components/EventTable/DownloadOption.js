@@ -28,8 +28,8 @@ export default function({onDownloadSearchList=()=>{},onDownloadSelectedList=()=>
         <Menu anchorEl={anchorEl}
               open={open}
               onClose={handleClose}>
-            <MenuItem disabled onClick={()=>{onDownloadSearchList();handleClose();}}>Data from Search list</MenuItem>
-            <MenuItem disabled onClick={()=>{onDownloadSelectedList();handleClose();}}>Data from Selected list</MenuItem>
+            <MenuItem onClick={()=>{onDownloadSearchList();handleClose();}}>Data from Search list</MenuItem>
+            <MenuItem onClick={()=>{onDownloadSelectedList();handleClose();}}>Data from Selected list</MenuItem>
             <MenuItem disabled onClick={handleClose} href={process.env.REACT_APP_DATA_DOWNLOAD}>MIRAGE-MetaCorpus Song List</MenuItem>
             <MenuItem onClick={handleClose} disabled>MIRAGE-MetaCorpus Station List</MenuItem>
         </Menu>

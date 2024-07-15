@@ -41,6 +41,7 @@ import {actionCreators} from "../../reducer/actions/selectedList";
 import {fields, fieldsWithoutSelected} from "../../components/EventTable/fields";
 import SongListDetail from "../../components/SongListDetail";
 import {useLog} from "../../Providers/Firebase";
+import {useLocation} from "react-router-dom";
 
 function getWindowDimensions() {
     const { innerWidth: width, innerHeight: height } = window;
@@ -63,12 +64,12 @@ const LandingPage = () => {
     const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions());
     const [layoutItems,setLayoutItems] = useState({
         Earth:{key:"Earth View",val:true,disable:true},
-        eventList:{key:"Song List",val:true},
-        eventDetail:{key:"Song Details",val:true},
-        eventMap:{key:"Song List Map",val:true},
+        eventList:{key:"Event List",val:true},
+        eventDetail:{key:"Event Details",val:true},
+        eventMap:{key:"Event List Map",val:true},
         mediaDetail:{key:"Listen",val:true},
-        eventSelectedList:{key:"Selected Songs",val:true},
-        eventListDetail:{key:"Song List Details",val:true},
+        eventSelectedList:{key:"Selected Events",val:true},
+        eventListDetail:{key:"Event List Details",val:true},
     });
     const toolbarRef = useRef(null);
     const layoutRef = useRef(null);
@@ -77,6 +78,7 @@ const LandingPage = () => {
     const eventSelectedData = useSelector(state => Array.from(state.seletedList.items.values( ) ));
     const {setlocation, logEvents} = useLog();
     const query = useQuery();
+    const location = useLocation();
     useEffect(()=>{
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition((position)=>{
@@ -97,11 +99,18 @@ const LandingPage = () => {
     const isLoadingInit = isLoading('rawData');
     const isLoadingEvent = isLoading('events');
     const isLoadingLocs = isLoading('locs');
+    const [firstLoad,setFirstLoad] = useState(true);
     useEffect(()=>{
         if (!isLoadingInit) {
-            requestEvents(filters, 1000)
+            if (firstLoad){
+                setFirstLoad(false);
+                if (!(query && query.get("selected")))
+                    requestEvents(filters, 1000);
+            } else{
+            requestEvents(filters, 1000);
         }
-    },[isLoadingInit,filters])
+        }
+    },[isLoadingInit,filters,firstLoad])
     const onSelectStream = useCallback((data)=>{
         requestDetail(data);
     },[getEvents])
@@ -179,14 +188,29 @@ const LandingPage = () => {
             children: [
                 {"type": "row",
                     children: [
-                        {
-                            type: "tabset",
-                            weight: 50,
+                        {"type": "row",
                             children: [
                                 {
-                                    type: "tab",
-                                    name: "Song List",
-                                    component: "eventList",
+                                    type: "tabset",
+                                    weight: 50,
+                                    children: [
+                                        {
+                                            type: "tab",
+                                            name: "Event List",
+                                            component: "eventList",
+                                        }
+                                    ]
+                                },
+                                {
+                                    type: "tabset",
+                                    weight: 50,
+                                    children: [
+                                        {
+                                            type: "tab",
+                                            name: "Selected Events",
+                                            component: "eventSelectedList",
+                                        }
+                                    ]
                                 }
                             ]
                         },
@@ -196,18 +220,7 @@ const LandingPage = () => {
                             children: [
                                 {
                                     type: "tab",
-                                    name: "Selected Songs",
-                                    component: "eventSelectedList",
-                                }
-                            ]
-                        },
-                        {
-                            type: "tabset",
-                            weight: 50,
-                            children: [
-                                {
-                                    type: "tab",
-                                    name: "Song Detail",
+                                    name: "Event Detail",
                                     component: "eventDetail",
                                 },{
                                     type: "tab",
@@ -215,17 +228,17 @@ const LandingPage = () => {
                                     component: "mediaDetail",
                                 },{
                                     type: "tab",
-                                    name: "Song List Map",
+                                    name: "Event List Map",
                                     component: "eventMap",
                                 },
                                 {
                                     type: "tab",
-                                    name: "Song List Detail",
+                                    name: "Event List Detail",
                                     component: "eventListDetail",
                                 }
                             ]
                         }
-                        ]
+                    ]
                 }
             ]
         }
@@ -255,6 +268,7 @@ const LandingPage = () => {
                                    onSendToList={(l)=>dispatch(actionCreators.addsToBasket(l))}
                                    onRemoveFromList={(l)=>dispatch(actionCreators.removeItems(l))}
                                    // onTogleWin={()=>onTogleWin("eventList")}
+                                   mainurl={location}
                 />;
             case 'eventListDetail':
                 return <SongListDetail countries={isFullView?getList('countries_full'):getList('countries')}/>;
@@ -271,6 +285,7 @@ const LandingPage = () => {
                                    onSendToList={(l)=>dispatch(actionCreators.addsToBasket(l))}
                                    onRemoveFromList={(l)=>dispatch(actionCreators.removeItems(l))}
                                    // onTogleWin={()=>onTogleWin("eventList")}
+                                   mainurl={location}
                 />
             case 'eventMap':
                 return <EventMap
