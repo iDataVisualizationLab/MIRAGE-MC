@@ -64,12 +64,12 @@ const LandingPage = () => {
     const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions());
     const [layoutItems,setLayoutItems] = useState({
         Earth:{key:"Earth View",val:true,disable:true},
-        eventList:{key:"Song List",val:true},
-        eventDetail:{key:"Song Details",val:true},
-        eventMap:{key:"Song List Map",val:true},
+        eventList:{key:"Event List",val:true},
+        eventDetail:{key:"Event Details",val:true},
+        eventMap:{key:"Event List Map",val:true},
         mediaDetail:{key:"Listen",val:true},
-        eventSelectedList:{key:"Selected Songs",val:true},
-        eventListDetail:{key:"Song List Details",val:true},
+        eventSelectedList:{key:"Selected Events",val:true},
+        eventListDetail:{key:"Event List Details",val:true},
     });
     const toolbarRef = useRef(null);
     const layoutRef = useRef(null);
@@ -196,7 +196,7 @@ const LandingPage = () => {
                                     children: [
                                         {
                                             type: "tab",
-                                            name: "Song List",
+                                            name: "Event List",
                                             component: "eventList",
                                         }
                                     ]
@@ -207,7 +207,7 @@ const LandingPage = () => {
                                     children: [
                                         {
                                             type: "tab",
-                                            name: "Selected Songs",
+                                            name: "Selected Events",
                                             component: "eventSelectedList",
                                         }
                                     ]
@@ -220,7 +220,7 @@ const LandingPage = () => {
                             children: [
                                 {
                                     type: "tab",
-                                    name: "Song Detail",
+                                    name: "Event Detail",
                                     component: "eventDetail",
                                 },{
                                     type: "tab",
@@ -228,12 +228,12 @@ const LandingPage = () => {
                                     component: "mediaDetail",
                                 },{
                                     type: "tab",
-                                    name: "Song List Map",
+                                    name: "Event List Map",
                                     component: "eventMap",
                                 },
                                 {
                                     type: "tab",
-                                    name: "Song List Detail",
+                                    name: "Event List Detail",
                                     component: "eventListDetail",
                                 }
                             ]

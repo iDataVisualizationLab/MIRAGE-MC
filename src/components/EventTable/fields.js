@@ -49,7 +49,7 @@ export const fields = [
     },
     {
         accessorKey: 'track_name',
-        header: 'Song',
+        header: 'Event',
         dynamic:true,
     }
     // ,

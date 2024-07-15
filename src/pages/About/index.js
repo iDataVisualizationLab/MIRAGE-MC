@@ -32,7 +32,7 @@ const AboutDialog = ({ children }) => {
 
                     </Typography>
                     <Typography variant={"h5"} sx={{marginBottom:2}}>
-                        The MIRAGE dashboard (v{process.env.REACT_APP_DATA_APP_VERSION}) consists of meta data (e.g., artist name, song title, etc.) for one million songs or events that were streaming on the Radio Garden streaming service during the months October-January 2022-2023. Each of 86 meta data variables pertaining to the location, station, stream, artist, and track was obtained from either the Radio Garden API, the internet radio station stream encoder, review by human annotators, or the Spotify and Wikidata APIs.
+                        The MIRAGE dashboard (v{process.env.REACT_APP_DATA_APP_VERSION}) consists of meta data (e.g., artist name, event title, etc.) for one million songs or events that were streaming on the Radio Garden streaming service during the months October-January 2022-2023. Each of 86 meta data variables pertaining to the location, station, stream, artist, and track was obtained from either the Radio Garden API, the internet radio station stream encoder, review by human annotators, or the Spotify and Wikidata APIs.
                     </Typography>
                     <Typography variant={"h5"} sx={{marginBottom:1}}>
                     If you are a copyright owner for any of the metadata that appears in MIRAGE and would like us to remove your metadata, please contact the developer team at the following email address: {"<removed for anonymous review>"}

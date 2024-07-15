@@ -86,7 +86,7 @@ export default function ({currentDetail,onTogleWin,locs, events,onSelect,sx={}})
     return (<>
         <Card sx={{...sx,width:'100%', backgroundColor: (theme) => semicolor(theme.palette.background.paper)}}>
             <CardContent sx={{height: '100%', position: 'relative'}}>
-                <Typography>Song Info & Visualizations</Typography>
+                <Typography>Event Info & Visualizations</Typography>
                 <IconButton
                     aria-label="close"
                     onClick={onTogleWin}

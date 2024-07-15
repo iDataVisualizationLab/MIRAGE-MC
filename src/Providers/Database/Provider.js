@@ -321,7 +321,7 @@ const Provider = ({  children }) => {
     },[state]);
     
     const getShortenLink = useCallback(()=>{
-        // get filter, ID and seleted song
+        // get filter, ID and seleted event
         const _data = {filters,ids:eventSelectedData.map(d=>d._id),id:getDetail()};
         const compressed = lzString.compressToEncodedURIComponent(JSON.stringify(_data));
         return axios.post(`${APIUrl}/url/`,{data:compressed}).then(({data})=> {
