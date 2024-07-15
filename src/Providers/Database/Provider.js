@@ -12,6 +12,7 @@ import {
     selectFilters
 } from "../../reducer/streamfilters";
 import {actionCreators} from "../../reducer/actions/selectedList";
+import exportVariable from './data/MIRAGE_exportvariables.csv';
 
 const APIKey = process.env.REACT_APP_DATA_API;
 const APIUrl = ((process.env.NODE_ENV === 'production') ? process.env.REACT_APP_DATA_URL : process.env.REACT_APP_DATA_URL_LOCAL);
@@ -51,6 +52,7 @@ const init = {fields: {value:{stationData:[],
     locs_full: {value:full_location},
     countries_full: {value:full_countries},
     events: {},
+    event_export_list: {value:{}},
     loading:false,
     error:false,
     isInit:false
@@ -73,6 +75,7 @@ const Provider = ({  children }) => {
             dispatch({type: 'LOADING_CHANGED', path: 'locs', isLoading: true});
             dispatch({type: 'LOADING_CHANGED', path: 'countries', isLoading: true});
             dispatch({type: 'LOADING_CHANGED', path: 'fields', isLoading: true});
+            dispatch({type: 'LOADING_CHANGED', path: 'event_export_list', isLoading: true}); // for export
             // load data
             Promise.all([
                 axios.get(`${APIUrl}/station/city`,{
@@ -155,6 +158,15 @@ const Provider = ({  children }) => {
                 dispatch({type: 'VALUE_CHANGE', path: 'fields', value: fields, isLoading: false});
                 // console.timeEnd('-filterdata-');
                 console.timeEnd('Load and process data');
+            });
+            // load export list
+            d3csv(exportVariable,(data)=>{
+                const event_export_list={};
+                data.forEach(d=>{
+                    if (d["cut from export?"]==="N")
+                        event_export_list[d["metadata variables"]]=true;
+                });
+                dispatch({type: 'VALUE_CHANGE', path: 'event_export_list', value: event_export_list, isLoading: false});
             });
         } catch (error) {
             dispatch({

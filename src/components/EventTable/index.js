@@ -25,7 +25,8 @@ const EventTable = ({
     // const [data, setData] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [sorting, setSorting] = useState([]);
-    const {getDownloadData,getShortenLink} = useDatabase();
+    const {getDownloadData,getShortenLink, getList} = useDatabase();
+    const event_export_list = getList('event_export_list');
 
     useEffect(() => {
         //scroll to the top of the table when the sorting changes
@@ -50,7 +51,7 @@ const EventTable = ({
                 filename: `mirage-mc-${new Date().toDateString()}`,
                 useBom: true,
                 useKeysAsHeaders: true,
-                // headers: fields.map((c) => c.accessorKey),
+                headers: Object.keys(event_export_list),
             };
             const csvExporter = new ExportToCsv(csvOptions);
             csvExporter.generateCsv(datadownload);
